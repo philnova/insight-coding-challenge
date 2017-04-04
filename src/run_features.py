@@ -8,12 +8,13 @@ def run(input_server_log, output_hosts, output_hours, output_resources, output_b
 
     logf = open("errors.txt", "w") # error logging
 
-    server_log = read_input_data.read(input_server_log)
+    log_reader = read_input_data.FileInputReader(input_server_log)
+    log_reader.read()
 
     # Implement Feature 1
     try:
         parser1 = feature1.FindMostActive(
-            server_log,
+            log_reader.data,
             output_hosts,
             k=10)
         parser1.parse()
@@ -23,7 +24,7 @@ def run(input_server_log, output_hosts, output_hours, output_resources, output_b
     # Implement Feature 2
     try:
         parser2 = feature2.FindMostIntensiveResources(
-            server_log,
+            log_reader.data,
             output_resources,
             k=10)
         parser2.parse()
@@ -33,7 +34,7 @@ def run(input_server_log, output_hosts, output_hours, output_resources, output_b
     # Implement Feature 3
     try:
         parser3 = feature3.FindHighestTrafficWindows(
-            server_log,
+            log_reader.data,
             output_hours,
             k=10,
             minutes_per_bucket=60)
@@ -44,7 +45,7 @@ def run(input_server_log, output_hosts, output_hours, output_resources, output_b
     # Implement Feature 4
     try:
         parser4 = feature4.FindBlockedIPs(
-            server_log,
+            log_reader.data,
             output_blocked,
             failed_attempts = 3,
             window_seconds = 20,
