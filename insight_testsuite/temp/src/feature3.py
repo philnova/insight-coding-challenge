@@ -9,7 +9,7 @@ class FindHighestTrafficWindows(base_feature.BaseFeature):
     def __init__(self, input_data, output_file, k=10, minutes_per_bucket=60):
         super(FindHighestTrafficWindows, self).__init__(input_data, output_file)
         self.time_to_requests = collections.Counter()
-        self.time_of_hits = []
+        #self.time_of_hits = []
         self.timezone = self.get_timezone()
         self.k = k
         self.minutes_per_bucket = minutes_per_bucket

@@ -9,7 +9,6 @@ class FindHighestTrafficWindows(base_feature.BaseFeature):
     def __init__(self, input_data, output_file, k=10, minutes_per_bucket=60):
         super(FindHighestTrafficWindows, self).__init__(input_data, output_file)
         self.time_to_requests = collections.Counter()
-        self.time_of_hits = []
         self.timezone = self.get_timezone()
         self.k = k
         self.minutes_per_bucket = minutes_per_bucket
@@ -25,7 +24,11 @@ class FindHighestTrafficWindows(base_feature.BaseFeature):
         return timestring+' '+self.timezone+','+hit_count
                 
     def _sum_sliding_window(self):
-        left_cutoff = self.server_log[0].timestamp
+        try:
+            left_cutoff = self.server_log[0].timestamp
+        except IndexError:
+            return # if there are no events, we are done
+
         hits_in_this_bucket = 1
         l, r = 0, 0
         max_time = self.server_log[-1].timestamp
@@ -53,7 +56,7 @@ class FindHighestTrafficWindows(base_feature.BaseFeature):
     def parse(self):
         self._sum_sliding_window()
         output = self._filter_top_k(self.time_to_requests, self.k)
-        output.sort(key=lambda x: x[0]) # resolve ties by putting hosts in lexicographic order
+        output.sort(key=lambda x: x[0]) # first order by time
         output.sort(key=lambda x: x[1], reverse=True) # re-sort by frequency, descending
         self._write_output(output, self._data_to_string)
         
