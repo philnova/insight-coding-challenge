@@ -48,3 +48,9 @@ However, there are some subtle cases when we *cannot* jump ahead:
 ### Additional Features
 
 All parameters presented in the problem statement, including lengths of time for the activity windows in Features 3 and 4, are tuneable parameters. 
+
+## Testing
+
+The module src/profiler.py runs cProfiler on all four features using the test dataset.
+
+I use py.test for my unit tests. Run py.test from the root directory.
