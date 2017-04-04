@@ -15,33 +15,35 @@ class FindBlockedIPs(base_feature.BaseFeature):
     def _data_to_string(self, data):
         return data.convert_to_string() # use the method provided in read_server_log
 
-    def _look_ahead_for_failures(self, target_host, start_idx, remaining_failed_attempts, time_cutoff):
-        for idx in xrange(start_idx, self.server_log_len):
-            if self.server_log[start_idx].timestamp > time_cutoff:
-                return idx
-            if self.server_log[idx].host == target_host:
-                if self.server_log[idx].response_code in self.failure_codes:
-                    remaining_failed_attempts -= 1
-                    if remaining_failed_attempts == 0:
-                        return self._block_incoming_attempts(target_host, idx + 1, self.server_log[idx].timestamp + timedelta(minutes = self.block_minutes))
-                    else:
-                        return self._look_ahead_for_failures(target_host, idx + 1, remaining_failed_attempts, time_cutoff)
+    def _look_ahead_for_failures(self, target_host, start_idx, current_idx, remaining_failed_attempts, time_cutoff):
+        for idx in xrange(current_idx, self.server_log_len):
+            if self.server_log[idx].timestamp > time_cutoff or self.server_log[idx].host != target_host:
+                return start_idx # we cannot conclude anything about skipping ahead
+            elif self.server_log[idx].response_code in self.failure_codes:
+                remaining_failed_attempts -= 1
+                if remaining_failed_attempts == 0:
+                    return self._block_incoming_attempts(target_host, idx + 1, self.server_log[idx].timestamp + timedelta(minutes = self.block_minutes))
                 else:
-                    return idx # successful login; end search
-        return self.server_log_len
+                    return self._look_ahead_for_failures(target_host, start_idx, idx + 1, remaining_failed_attempts, time_cutoff)
+            else:
+                return idx # successful login; we are done looking at this window
+        return start_idx
 
-    def _block_incoming_attempts(self, target_host, start_idx, time_cutoff):
+    def _block_incoming_attempts(self, target_host, current_idx, time_cutoff):
+        start_idx = current_idx
         for idx in xrange(start_idx, self.server_log_len):
             if self.server_log[idx].timestamp > time_cutoff or self.server_log[idx].host != target_host:
-                return idx
+                return start_idx 
             self.blocked_logs.append(self.server_log[idx])
+            start_idx = idx # once we have blocked an attempt, we do not need to reconsider it
+        return start_idx
 
     def _scan_for_first_failed_login(self):
         idx = 0
         while idx < self.server_log_len:
             log = self.server_log[idx]
             if log.response_code in self.failure_codes:
-                idx = self._look_ahead_for_failures(log.host, idx + 1, self.failed_attempts - 1, log.timestamp + timedelta(seconds = self.window_seconds))
+                idx = self._look_ahead_for_failures(log.host, idx + 1, idx + 1, self.failed_attempts - 1, log.timestamp + timedelta(seconds = self.window_seconds))
             else:
                 idx += 1
 
