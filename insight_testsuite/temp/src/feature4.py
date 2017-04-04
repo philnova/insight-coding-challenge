@@ -29,14 +29,12 @@ class FindBlockedIPs(base_feature.BaseFeature):
                 return idx # successful login; we are done looking at this window
         return start_idx
 
-    def _block_incoming_attempts(self, target_host, current_idx, time_cutoff):
-        start_idx = current_idx
+    def _block_incoming_attempts(self, target_host, start_idx, time_cutoff):
         for idx in xrange(start_idx, self.server_log_len):
             if self.server_log[idx].timestamp > time_cutoff or self.server_log[idx].host != target_host:
-                return start_idx 
+                return idx 
             self.blocked_logs.append(self.server_log[idx])
-            start_idx = idx # once we have blocked an attempt, we do not need to reconsider it
-        return start_idx
+        return idx
 
     def _scan_for_first_failed_login(self):
         idx = 0

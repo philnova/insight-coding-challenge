@@ -1,6 +1,8 @@
 import collections
 import pytest
+import sys
 import os.path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../src/")
 from feature2 import FindMostIntensiveResources
 from gen_test_data import gen_test_data
 
