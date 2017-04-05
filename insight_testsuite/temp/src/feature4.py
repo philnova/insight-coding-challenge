@@ -34,7 +34,7 @@ class FindBlockedIPs(base_feature.BaseFeature):
             if self.server_log[idx].timestamp > time_cutoff or self.server_log[idx].host != target_host:
                 return idx 
             self.blocked_logs.append(self.server_log[idx])
-        return idx
+        return start_idx
 
     def _scan_for_first_failed_login(self):
         idx = 0
