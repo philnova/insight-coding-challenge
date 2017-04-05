@@ -45,6 +45,10 @@ However, there are some subtle cases when we *cannot* jump ahead:
 
 ### Additional Features
 
+I implemented an additional feature, Feature 5. In order to run it, run ./run_extra.sh.
+
+Feature 5 scans the input for a single host, specified as a command line argument. Feature 5 outputs bins.txt, which lists the host's activity over a series of bins (default 5 minutes). If there is no activity within a given bin, 0 will be listed. This could allow a client to generate plots over time for a given host, e.g. to understand usage patterns for a given customer.
+
 All parameters presented in the problem statement, including lengths of time for the activity windows in Features 3 and 4, are tuneable parameters. 
 
 ## Testing

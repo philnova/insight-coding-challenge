@@ -12,6 +12,14 @@ parser.add_argument('output_resources',
     help='Writeable text file to contain list of the top 10 most frequently visited 60-minute periods.')
 parser.add_argument('output_blocked',
     help='Writeable text file to contain potential security threats.')
+parser.add_argument('output_bins',
+    const=None,
+    nargs='?',
+    help='Writeable text file to contain requests from single host binned by time')
+parser.add_argument('host_to_track',
+    const=None,
+    nargs='?',
+    help='Name of host that you would like to see an activity report for')
 args = parser.parse_args()
 
 run_features.run(
@@ -19,4 +27,6 @@ run_features.run(
     args.output_hosts,
     args.output_hours,
     args.output_resources,
-    args.output_blocked)
+    args.output_blocked,
+    args.output_bins,
+    args.host_to_track)

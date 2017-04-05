@@ -2,9 +2,10 @@ import feature1
 import feature2
 import feature3
 import feature4
+import feature5
 import read_input_data
 
-def run(input_server_log, output_hosts, output_hours, output_resources, output_blocked):
+def run(input_server_log, output_hosts, output_hours, output_resources, output_blocked, output_bins=None, host_to_track=None):
 
     logf = open("errors.txt", "w") # error logging
 
@@ -54,5 +55,17 @@ def run(input_server_log, output_hosts, output_hours, output_resources, output_b
         parser4.parse()
     except Exception as e:
         logf.write("Failed on Feature 4: {0}\n".format(str(e)))
+
+    # Implement Extra Feature
+    if output_bins is not None and host_to_track is not None:
+        try:
+            parser5 = feature5.GetHostActivityLog(
+                log_reader.data,
+                output_bins,
+                host_to_search = host_to_track,
+                minutes_per_bin = 5)
+            parser5.parse()
+        except Exception as e:
+            logf.write("Failed on Feature 4: {0}\n".format(str(e)))
 
     logf.close()
