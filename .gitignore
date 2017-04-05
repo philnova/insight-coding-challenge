@@ -1,4 +1,4 @@
-log_input/*.txt
+log_input/log.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
