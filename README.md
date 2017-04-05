@@ -1,7 +1,5 @@
 # Insight Coding Challenge
 
-## Structure
-
 ## Dependencies
 
 This project uses Python 2.7. All modules used are part of the Python standard library: argparse, collections.Counter, csv, and datetime.
@@ -34,7 +32,7 @@ The runtime of the sliding window step depends both on the number of timestamps 
 
 ### Feature 4
 
-In Feature 4, we need to maintain block windows for hosts. Since these block windows may overlap in time (e.g. host A could be blocked at the same time as host B), I first sort by host. This ensures that during our scan, we are always moving forward in the input; i.e., once we consider a row, we never need to consider it again. We first scan through the input to find any failed login attempts (response code 401). When we encounter one, we call a helper function, which sets a time limit and begins looking ahead. If we detect three total failed logins before we reach the end of the time window, we call another helper function, which logs any additional attempts by the same host over the block window.
+In Feature 4, we need to maintain block windows for hosts. Since these block windows may overlap in time (e.g. host A could be blocked at the same time as host B), I first sort by host. We first scan through the input to find any failed login attempts (response code 401). When we encounter one, we call a helper function, which sets a time limit and begins looking ahead. If we detect three total failed logins before we reach the end of the time window, we call another helper function, which logs any additional attempts by the same host over the block window.
 
 An important optimization to Feature 4 is to note that, once we first detect a failed login, we by necessity look ahead at the data. Instead of simply returning to our outer loop at the same index, it would be preferable to use the information we gain by looking ahead and then skipping to the next appropriate index.
 
