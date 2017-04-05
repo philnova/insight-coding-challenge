@@ -14,7 +14,6 @@ class GetHostActivityLog(base_feature.BaseFeature):
         return data[0].strftime('%d/%b/%Y:%H:%M:%S')+","+str(data[1])
 
     def _find_activity_bounds_from_host(self):
-        print self.host_to_search
         first, last = None, None
         for idx, log in enumerate(self.server_log):
             if first is not None and log.host != self.host_to_search:
@@ -35,14 +34,20 @@ class GetHostActivityLog(base_feature.BaseFeature):
                 current_bin += 1
             else:
                 self.bin_to_activity[start_time] = current_bin
-                current_bin = 1
                 start_time = cutoff
                 cutoff += timedelta(minutes = self.minutes_per_bin)
+                current_bin = 0
+                while self.server_log[idx].timestamp > cutoff:
+                    self.bin_to_activity[start_time] = current_bin
+                    start_time = cutoff
+                    cutoff += timedelta(minutes = self.minutes_per_bin)
+                current_bin = 1
+                    
+
         self.bin_to_activity[start_time] = current_bin
 
     def parse(self):
         first, last = self._find_activity_bounds_from_host()
-        print first, last
         if first is not None:
             # conditional ensures that host was actually found
             self._bin_activity(first, last)
